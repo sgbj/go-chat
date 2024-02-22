@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      ::-webkit-scrollbar {
+        width: 0.25rem;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: rgb(255 255 255 / 0.25);
+        border-radius: 1rem;
+      }
+
+      body {
+        margin: 0;
+        height: 100vh;
+        background-image: radial-gradient(
+          circle 100rem at 0% 100%,
+          rgb(3 0 20) 20%,
+          rgb(16 15 33) 80%
+        );
+        color: rgb(255 255 255);
+        font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        place-items: center;
+        place-content: center;
+        font-size: 20px;
+      }
+
+      main {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 32rem;
+        height: 100%;
+        max-height: 40rem;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      #messages {
+        flex-grow: 1;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      #messages div {
+        background: rgb(33 30 57);
+        padding: 0.5rem 0.75rem;
+        width: fit-content;
+        border-radius: 1.5rem;
+      }
+
+      form {
+        position: relative;
+      }
+
+      input {
+        width: 100%;
+        min-width: 0;
+        font-family: "Inter", sans-serif;
+        background: rgb(52, 39, 88);
+        color: rgb(255 255 255);
+        border-radius: 1.5rem;
+        padding: 0.75rem 3rem 0.75rem 1rem;
+        border: none;
+        font-size: 1.2rem;
+      }
+
+      ::placeholder {
+        color: rgb(255 255 255 / 50%);
+      }
+
+      button {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.4rem;
+        font-size: 1.75rem;
+        font-family: "Inter", sans-serif;
+        background: none;
+        color: rgb(255 255 255);
+        padding: 0;
+        border-radius: 2rem;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>🗨️ Chat</h1>
+      <div id="messages"></div>
+      <form>
+        <input
+          id="message"
+          placeholder="Message"
+          aria-label="Message"
+          required
+          autofocus
+        />
+        <button aria-label="Send">✉️</button>
+      </form>
+    </main>
+    <script>
+      const ws = new WebSocket(`ws://${document.location.host}/ws`);
+      ws.addEventListener("open", (e) => {
+        console.log("open", e);
+      });
+      ws.addEventListener("message", (e) => {
+        console.log("message", e);
+        const messages = document.getElementById("messages");
+        const message = document.createElement("div");
+        message.textContent = e.data;
+        messages.appendChild(message);
+        messages.scrollTop = messages.scrollHeight;
+      });
+      ws.addEventListener("close", (e) => {
+        console.log("close", e);
+      });
+      ws.addEventListener("error", (e) => {
+        console.error("error", e);
+      });
+
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = document.getElementById("message");
+        ws.send(input.value);
+        input.value = "";
+      });
+    </script>
+  </body>
+</html>
