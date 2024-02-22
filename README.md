@@ -29,3 +29,9 @@ go run .
 ```
 
 Open a browser to http://localhost:8080
+
+## Future
+
+* Use JSON for messages
+* Support different types of messages (e.g., connected, disconnected, message)
+* Add a name
