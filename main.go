@@ -9,10 +9,12 @@ import (
 
 var upgrade = websocket.Upgrader{}
 
-var clients = make(map[*websocket.Conn]bool)
-var register = make(chan *websocket.Conn)
-var unregister = make(chan *websocket.Conn)
-var broadcast = make(chan []byte)
+var (
+	clients    = make(map[*websocket.Conn]bool)
+	register   = make(chan *websocket.Conn)
+	unregister = make(chan *websocket.Conn)
+	broadcast  = make(chan []byte)
+)
 
 func run() {
 	for {
@@ -23,7 +25,7 @@ func run() {
 		case client := <-unregister:
 			delete(clients, client)
 			client.Close()
-		
+
 		case message := <-broadcast:
 			for client := range clients {
 				if err := client.WriteMessage(websocket.TextMessage, message); err != nil {
